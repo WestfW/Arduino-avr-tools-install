@@ -43,7 +43,7 @@ REM Pretty print some stuff for the user.
 @echo Checking tool versions
 @echo. 
 avr-gcc --version
-avrdude -v
+call :avrdudeversion
 REM And we're done (Most of the work being done in the sub-process.)
 goto eof
 
@@ -98,17 +98,17 @@ REM  for avr-gcc.  If so, set variables saying we picked one.
     if exist "!prg!\Hardware\tools\avr\bin\avr-gcc.exe" (
        if "%printed%" NEQ "Y" (
           echo At least one Arduino install found.
-	  echo.
-	  set printed=Y
+          echo.
+          set printed=Y
        )
        @echo Looks like !prg! has version 
        call :gccversion "!prg!\Hardware\tools\avr\bin\avr-gcc.exe"
        SET /P confirm="Use !prg! ? [y/n]>"
        if "!confirm!"=="x" exit /b 1
        if "!confirm!"=="y" (
-	 SET aroot=!prg!
-	 set picked=y
-	 exit /b 0
+         SET aroot=!prg!
+         set picked=y
+         exit /b 0
        )
     ) else %DEBUG% No Arduino exe in expected spot !prg!
   )
@@ -186,6 +186,8 @@ REM ----------------------------------------------------------------------
     goto eof
 
 
+REM ----------------------------------------------------------------------
+
 :gccversion
    REM This implements "gcc --version | head -1" - show the first line
    if EXIST %1 (
@@ -196,6 +198,25 @@ REM ----------------------------------------------------------------------
      )
    )
    exit /b 0
+
+
+REM ----------------------------------------------------------------------
+
+:avrdudeversion
+   SETLOCAL ENABLEDELAYEDEXPANSION
+   REM This implements "gcc --version | head -4" - show the first line
+   set /a count=4
+   FOR /F "delims=*" %%l in ('"avrdude -v 2>&1"') DO (
+     @echo %%l
+     set /a count=!count!-1
+     if !count! equ 0 (
+        ENDLOCAL
+        exit /b 0
+     )
+   )
+   exit /b 0
+goto :eof
+
 
 REM ----------------------------------------------------------------------
 
