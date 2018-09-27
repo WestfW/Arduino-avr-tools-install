@@ -1,4 +1,9 @@
 @echo off
+REM install-avr-tools.bat by Bill Westfield (WestfW)
+REM  Find the avr-gcc tools that are part of an Arduino install, and
+REM  add them to the PATH for the duration of the current shell.
+REM  See https://hackaday.io/project/19935
+REM  https://github.com/WestfW/Arduino-avr-tools-install
 @echo.
 SET DEBUG=REM
 REM For debugging, do:
@@ -60,7 +65,7 @@ REM Look for existing avr-gcc in path.
 call :clearerrors
 call :which avr-gcc.exe
 IF "%gotwhich%" NEQ "" (
-  @ECHO avr-gcc already installed at %gotwhich%
+  @ECHO avr-gcc already installed at "%gotwhich%"
   avr-gcc --version
   exit /b 123
 ) ELSE (
@@ -180,7 +185,7 @@ REM ----------------------------------------------------------------------
     for %%i in (%1) do set fullspec=%%~$PATH:i
     if not "x!fullspec!"=="x" (
        %DEBUG% !fullspec!
-       set gotwhich=!fullspec!    
+       set gotwhich=!fullspec!
     )
     %DEBUG% End which %gotwhich%
     goto eof
